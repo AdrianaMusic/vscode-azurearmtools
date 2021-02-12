@@ -48,7 +48,6 @@ import { escapeNonPaths } from "./util/escapeNonPaths";
 import { expectTemplateDocument } from "./util/expectDocument";
 import { getRenameError } from "./util/getRenameError";
 import { Histogram } from "./util/Histogram";
-import { NormalizedMap } from './util/NormalizedMap';
 import { pathExists } from "./util/pathExists";
 import { readUtf8FileWithBom } from "./util/readUtf8FileWithBom";
 import { Stopwatch } from "./util/Stopwatch";
@@ -330,6 +329,9 @@ export class AzureRMTools implements IProvideOpenedDocuments {
             const activeDocument = activeEditor.document;
             this.updateOpenedDocument(activeDocument);
         }
+    }
+    public setStaticDocument(documentOrUri: vscode.Uri, content: string): void {
+        //throw new Error("Method not implemented.");
     }
 
     private getRegisteredRenameCodeActionProvider(): vscode.Disposable {
@@ -995,6 +997,18 @@ export class AzureRMTools implements IProvideOpenedDocuments {
             };
             ext.context.subscriptions.push(
                 vscode.languages.registerDocumentLinkProvider(templateDocumentSelector, documentLinkProvider));
+
+            const textDocumentContentProvider: vscode.TextDocumentContentProvider = {
+                provideTextDocumentContent: async (uri: vscode.Uri, token: vscode.CancellationToken): Promise<string | undefined> => {
+                    const dt = this.getOpenedDeploymentTemplate(uri);
+                    if (dt) {
+                        return "// " + uri.toString() + "\n" + dt.documentText;
+                    }
+                }
+            };
+            ext.context.subscriptions.push(
+                vscode.workspace.registerTextDocumentContentProvider("linked-template", textDocumentContentProvider)
+            );
 
             ext.context.subscriptions.push(notifyTemplateGraphAvailable(this.onTemplateGraphAvailable, this));
             ext.context.subscriptions.push(ext.languageServerStateChanged(this.onLanguageServerStateChanged, this));
@@ -1744,15 +1758,6 @@ export class AzureRMTools implements IProvideOpenedDocuments {
         const rootTemplate = this.getOpenedDeploymentTemplate(rootTemplateUri);
 
         if (rootTemplate) {
-            const loadedTemplatesMap: NormalizedMap<vscode.Uri, DeploymentTemplateDoc> = new NormalizedMap<vscode.Uri, DeploymentTemplateDoc>(
-                getNormalizedDocumentKey
-            );
-            for (const entry of this._deploymentDocuments) { //asdf remove
-                if (entry[1] instanceof DeploymentTemplateDoc) {
-                    loadedTemplatesMap.set(entry[1].documentUri, entry[1]);
-                }
-            }
-
             for (const doc of vscode.workspace.textDocuments) {
                 const rootTemplateKey = getNormalizedDocumentKey(vscode.Uri.parse(e.rootTemplateUri, true));
                 if (getNormalizedDocumentKey(doc.uri) === rootTemplateKey) {

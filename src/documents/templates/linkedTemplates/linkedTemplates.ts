@@ -89,7 +89,7 @@ export async function onRequestOpenLinkedFile(
             // Strip the path of any query string, and use only the local file path
             const localPath = requestedLinkUri.fsPath;
 
-            const result = await tryOpenLinkedFile(localPath, pathType, context);
+            const result = await tryOpenLocalLinkedFile(localPath, pathType, context);
             if (result.document) {
                 properties.openResult = 'Loaded';
             } else {
@@ -104,8 +104,14 @@ export async function onRequestOpenLinkedFile(
                 const content = await httpGet(requestedLinkUri.toString());
                 const dt = new DeploymentTemplateDoc(content, requestedLinkUri);
                 assert(ext.provideOpenedDocuments, "ext.provideOpenedDocuments");
-                ext.provideOpenedDocuments.setOpenedDeploymentDocument(requestedLinkUri, dt);
-                return { content };
+                const newUri = Uri.parse(`linked-template:${requestedLinkUri.path}`);
+                ext.provideOpenedDocuments.setOpenedDeploymentDocument(newUri/*asdf*/, dt); //asdf comment
+                ext.provideOpenedDocuments.setStaticDocument(newUri, content); //asdf
+
+                const doc = await workspace.openTextDocument(newUri);
+                //setLangIdToArm(doc, context);
+
+                return { content }; //asdf
             } catch (error) {
                 return { loadErrorMessage: parseError(error).message };
             }
@@ -118,7 +124,7 @@ export async function onRequestOpenLinkedFile(
  * it will get sent to the language server.
  * <remarks>This function should not throw
  */
-async function tryOpenLinkedFile(
+async function tryOpenLocalLinkedFile(
     localPath: string,
     pathType: PathType,
     context: IActionContext
@@ -192,3 +198,17 @@ export async function openLinkedTemplateFile(linkedTemplateUri: Uri): Promise<vo
     };
     await commands.executeCommand("editor.action.openLink", args);
 }
+
+// export function getTempFilePath(baseFilename?: string, extension?: string): string {
+//     let randomName = '';
+//     extension = extension === undefined ? '.jsonc' : extension;
+
+//     for (let i = 0; i < 10; ++i) {
+//         // tslint:disable-next-line: insecure-random
+//         randomName += String.fromCharCode(64 + Math.random() * 26);
+//     }
+
+//     let tempName = `${randomName}${baseFilename ? `.${baseFilename}` : ''}${extension}`;
+
+//     return path.join(os.tmpdir(), tempName);
+// }
