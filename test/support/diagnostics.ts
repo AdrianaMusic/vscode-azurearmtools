@@ -357,7 +357,7 @@ export async function getDiagnosticsForDocument(
 
             if (includesLanguageServerSource) {
                 if (ext.languageServerState === LanguageServerState.Failed) {
-                    throw new Error(`Language server failed on start-up`);
+                    throw new Error(`Language server failed on start-up: ${ext.languageServerStartupError}`);
                 }
             }
 

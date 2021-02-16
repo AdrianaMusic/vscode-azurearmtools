@@ -93,6 +93,7 @@ export function startArmLanguageServerInBackground(): void {
                     let dotnetExePath: string | undefined = await getDotNetPath();
                     if (!dotnetExePath) {
                         // Acquisition failed
+                        ext.languageServerStartupError = ".dotnet acquisition returned no path";
                         ext.languageServerState = LanguageServerState.Failed;
                         return;
                     }
@@ -101,6 +102,7 @@ export function startArmLanguageServerInBackground(): void {
 
                     ext.languageServerState = LanguageServerState.Running;
                 } catch (error) {
+                    ext.languageServerStartupError = parseError(error).message;
                     ext.languageServerState = LanguageServerState.Failed;
                     throw error;
                 }
