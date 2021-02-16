@@ -29,7 +29,7 @@ import { stringify } from "./stringify";
 import { TempDocument, TempEditor, TempFile } from "./TempFile";
 import { testLog } from "./testLog";
 
-export const defaultDiagnosticsTimeoutMs = 2 * 60 * 1000; //asdf 20 * 60 * 1000; // CONSIDER: Use this long timeout only for first test, or for suite setup
+export const defaultDiagnosticsTimeoutMs = 20 * 60 * 1000; //asdf 20 * 60 * 1000; // CONSIDER: Use this long timeout only for first test, or for suite setup
 
 export type TransformDiagnosticMessage = (msg: string) => string;
 
