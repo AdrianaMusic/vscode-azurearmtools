@@ -4,7 +4,7 @@
 
 import { ITest, ITestCallbackContext } from "mocha";
 import { isWin32 } from "../../extension.bundle";
-import { diagnosticsTimeout } from "./diagnostics";
+import { defaultDiagnosticsTimeoutMs } from "./diagnostics";
 import { ITestPreparation, ITestPreparationResult, testWithPrep } from "./testWithPrep";
 
 export class RequiresWin32 implements ITestPreparation {
@@ -16,7 +16,7 @@ export class RequiresWin32 implements ITestPreparation {
                 skipTest: "this is not a Windows platform"
             };
         } else {
-            this.timeout(diagnosticsTimeout);
+            this.timeout(defaultDiagnosticsTimeoutMs);
             return {};
         }
     }
@@ -31,7 +31,7 @@ export class RequiresMacLinux implements ITestPreparation {
                 skipTest: "this is not a Mac/Linux platform"
             };
         } else {
-            this.timeout(diagnosticsTimeout);
+            this.timeout(defaultDiagnosticsTimeoutMs);
             return {};
         }
     }

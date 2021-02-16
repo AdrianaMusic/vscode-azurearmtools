@@ -57,7 +57,7 @@ suite("Linked templates functional tests", () => {
                             case LinkedFileLoadState.TooDeep:
                                 testLog.writeLine(`...${child.originalPath}: load state = ${child.loadState} => READY`);
                                 // Load completed or succeeded
-                                ready = true;
+                                ready = false;
                                 break;
 
                             default:

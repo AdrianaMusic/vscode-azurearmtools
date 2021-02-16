@@ -29,7 +29,7 @@ import { stringify } from "./stringify";
 import { TempDocument, TempEditor, TempFile } from "./TempFile";
 import { testLog } from "./testLog";
 
-export const diagnosticsTimeout = 20 * 60 * 1000; // CONSIDER: Use this long timeout only for first test, or for suite setup
+export const defaultDiagnosticsTimeoutMs = 2 * 60 * 1000; //asdf 20 * 60 * 1000; // CONSIDER: Use this long timeout only for first test, or for suite setup
 
 export type TransformDiagnosticMessage = (msg: string) => string;
 
@@ -228,6 +228,10 @@ export type ITestDiagnosticsOptions = IGetDiagnosticsOptions & ICompareDiagnosti
 
 export interface IGetDiagnosticsOptions {
     /**
+     * Timeout in milliseconds
+     */
+    timeoutMs?: number;
+    /**
      * Parameters that will be placed into a temp file and associated with the template file
      */
     parameters?: string | Partial<IDeploymentParametersFile>;
@@ -323,6 +327,8 @@ export async function getDiagnosticsForDocument(
         throw new Error("DISABLE_LANGUAGE_SERVER is set, but this test is trying to include a non-expressions diagnostic source");
     }
 
+    const timeoutMs = options.timeoutMs ?? defaultDiagnosticsTimeoutMs;
+
     // tslint:disable-next-line:typedef promise-must-complete // (false positive for promise-must-complete)
     let diagnosticsPromise = new Promise<IDiagnosticsResults>(async (resolve, reject) => {
         let currentDiagnostics: Diagnostic[] | undefined;
@@ -406,7 +412,7 @@ export async function getDiagnosticsForDocument(
                         + (currentDiagnostics ? currentDiagnostics.map(d => d.message).join('\n') : "None")));
                 done = true;
             },
-            diagnosticsTimeout);
+            timeoutMs);
 
         while (!done) {
             const results = getCurrentDiagnostics();

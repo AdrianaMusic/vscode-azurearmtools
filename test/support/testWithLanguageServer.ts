@@ -5,7 +5,7 @@
 import { ITest, ITestCallbackContext } from "mocha";
 import { DISABLE_LANGUAGE_SERVER } from "../testConstants";
 import { UseRealFunctionMetadata } from "../TestData";
-import { diagnosticsTimeout } from "./diagnostics";
+import { defaultDiagnosticsTimeoutMs } from "./diagnostics";
 import { ITestPreparation, ITestPreparationResult, testWithPrep } from "./testWithPrep";
 
 export class RequiresLanguageServer implements ITestPreparation {
@@ -17,7 +17,7 @@ export class RequiresLanguageServer implements ITestPreparation {
                 skipTest: "DISABLE_LANGUAGE_SERVER is set"
             };
         } else {
-            this.timeout(diagnosticsTimeout);
+            this.timeout(defaultDiagnosticsTimeoutMs);
             return {};
         }
     }
