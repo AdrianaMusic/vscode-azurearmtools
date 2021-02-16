@@ -9,7 +9,7 @@ steps:
 
   - task: Npm@1
     displayName: "Test"
-    timeoutInMinutes: 5 #asdf
+    timeoutInMinutes: 30
     inputs:
       command: custom
       customCommand: test
