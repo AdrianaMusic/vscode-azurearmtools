@@ -80,10 +80,10 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
     ext.context = context;
     ext.outputChannel = createAzExtOutputChannel(outputChannelName, configPrefix);
     ext.ui = new AzureUserInput(context.globalState);
-
     if (echoOutputChannelToConsole) {
         ext.outputChannel = new ConsoleOutputChannelWrapper(ext.outputChannel);
     }
+    registerUIExtensionVariables(ext);
 
     context.subscriptions.push(ext.completionItemsSpy);
 
@@ -91,8 +91,6 @@ export async function activateInternal(context: vscode.ExtensionContext, perfSta
     if (!ext.snippetManager.hasValue) {
         ext.snippetManager.value = SnippetManager.createDefault();
     }
-
-    registerUIExtensionVariables(ext);
 
     await callWithTelemetryAndErrorHandling('activate', async (actionContext: IActionContext): Promise<void> => {
         actionContext.telemetry.properties.isActivationEvent = 'true';
