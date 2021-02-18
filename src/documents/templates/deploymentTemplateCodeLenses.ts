@@ -240,7 +240,7 @@ export class LinkedTemplateCodeLens extends ResolvableCodeLens {
         linkedTemplateReferences: ILinkedTemplateReference[] | undefined,
         topLevelParameterValuesProvider: IParameterValuesSourceProvider | undefined
     ): LinkedTemplateCodeLens[] {
-        let title = "Linked template";
+        let title: string;
         const isRelativePath = scope.isRelativePath;
         const hasParameterFile = !!topLevelParameterValuesProvider?.parameterFileUri;
 
@@ -250,15 +250,16 @@ export class LinkedTemplateCodeLens extends ResolvableCodeLens {
 
         if (isRelativePath) {
             title = "Relative linked template";
-            if (!hasParameterFile) {
-                title += " " + "(validation disabled)";
-            } else if (firstLinkedTemplateRef) {
-                // title += " " + "(validation enabled)";
-            } else {
-                title += " " + "(cannot validate - make sure all other validation errors have been fixed)";
-            }
         } else {
-            title = "Linked template  ($(warning) Validation with uri not yet supported, consider using relativePath property)";
+            title = "Linked template";
+        }
+
+        if (!hasParameterFile) {
+            title += " " + "(validation disabled)";
+        } else if (firstLinkedTemplateRef) {
+            // title += " " + "(validation enabled)";
+        } else {
+            title += " " + "(cannot validate - make sure all other validation errors have been fixed)";
         }
 
         let langServerLoadState: string | undefined;
@@ -271,7 +272,7 @@ export class LinkedTemplateCodeLens extends ResolvableCodeLens {
         try {
             const templateUri = scope.document.documentUri;
             linkedUri = firstLinkedTemplateRef?.fullUri ? Uri.parse(firstLinkedTemplateRef.fullUri) : undefined;
-            if (linkedUri && templateUri.fsPath) {
+            if (linkedUri && templateUri.fsPath && linkedUri.scheme === 'file'/*asdf constant*/) {
                 const templateFolder = path.dirname(templateUri.fsPath);
                 linkedRelativePath = path.relative(templateFolder, linkedUri.fsPath);
                 if (!path.isAbsolute(linkedRelativePath) && !linkedRelativePath.startsWith('.')) {

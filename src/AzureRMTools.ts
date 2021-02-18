@@ -157,6 +157,8 @@ export class AzureRMTools implements IProvideOpenedDocuments {
 
     // tslint:disable-next-line: max-func-body-length
     constructor(context: vscode.ExtensionContext) {
+        ext.provideOpenedDocuments = this; //asdf?
+
         const jsonOutline: JsonOutlineProvider = new JsonOutlineProvider(context);
         ext.jsonOutlineProvider = jsonOutline;
         context.subscriptions.push(vscode.window.registerTreeDataProvider("azurerm-vscode-tools.template-outline", jsonOutline));
@@ -329,6 +331,9 @@ export class AzureRMTools implements IProvideOpenedDocuments {
             this.updateOpenedDocument(activeDocument);
         }
     }
+    public setStaticDocument(documentOrUri: vscode.Uri, content: string): void {
+        throw new Error("Method not implemented.");
+    }
 
     private getRegisteredRenameCodeActionProvider(): vscode.Disposable {
         const metaData = { providedCodeActionKinds: [vscode.CodeActionKind.RefactorRewrite] };
@@ -404,7 +409,7 @@ export class AzureRMTools implements IProvideOpenedDocuments {
     }
 
     // Add the deployment doc to our list of opened deployment docs
-    private setOpenedDeploymentDocument(documentUri: vscode.Uri, deploymentDocument: DeploymentDocument | undefined): void {
+    public setOpenedDeploymentDocument(documentUri: vscode.Uri, deploymentDocument: DeploymentDocument | undefined): void {
         assert(documentUri);
         const documentPathKey = getNormalizedDocumentKey(documentUri);
 
@@ -1002,6 +1007,17 @@ export class AzureRMTools implements IProvideOpenedDocuments {
             };
             ext.context.subscriptions.push(
                 vscode.languages.registerDocumentLinkProvider(templateDocumentSelector, documentLinkProvider));
+
+            const linkedTemplateDocumentProvider: vscode.TextDocumentContentProvider = {
+                //asdf changed?
+                provideTextDocumentContent: async (uri: vscode.Uri, _token: vscode.CancellationToken): Promise<string> => {
+                    return "hello";
+                }
+            };
+            ext.context.subscriptions.push(
+                vscode.workspace.registerTextDocumentContentProvider(
+                    'linked-template'/*asdf constant*/,
+                    linkedTemplateDocumentProvider));
 
             ext.context.subscriptions.push(notifyTemplateGraphAvailable(this.onTemplateGraphAvailable, this));
             ext.context.subscriptions.push(ext.languageServerStateChanged(this.onLanguageServerStateChanged, this));
