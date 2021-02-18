@@ -137,7 +137,7 @@ export class ParameterDefinitionCodeLens extends ResolvableCodeLens {
             } else if (hasDefaultValue) {
                 title = "Using default value";
             } else {
-                title = "$(warning) No value found";
+                title = "$(warning) No value found - click here to enter a value";
             }
         }
 
@@ -268,24 +268,26 @@ export class LinkedTemplateCodeLens extends ResolvableCodeLens {
         langServerLoadState = LinkedTemplateCodeLens.getLoadStateFromLanguageServerStatus();
 
         let linkedUri: Uri | undefined;
-        let linkedRelativePath: string | undefined;
+        let friendlyPath: string | undefined;
         try {
             const templateUri = scope.document.documentUri;
             linkedUri = firstLinkedTemplateRef?.fullUri ? Uri.parse(firstLinkedTemplateRef.fullUri) : undefined;
             if (linkedUri && templateUri.fsPath && linkedUri.scheme === 'file'/*asdf constant*/) {
                 const templateFolder = path.dirname(templateUri.fsPath);
-                linkedRelativePath = path.relative(templateFolder, linkedUri.fsPath);
-                if (!path.isAbsolute(linkedRelativePath) && !linkedRelativePath.startsWith('.')) {
-                    linkedRelativePath = `.${ext.pathSeparator}${linkedRelativePath}`;
+                friendlyPath = path.relative(templateFolder, linkedUri.fsPath);
+                if (!path.isAbsolute(friendlyPath) && !friendlyPath.startsWith('.')) {
+                    friendlyPath = `.${ext.pathSeparator}${friendlyPath}`;
                 }
+            } else {
+                friendlyPath = linkedUri?.toString();
             }
         } catch (error) {
             console.warn(parseError(error).message);
         }
 
         if (firstLinkedTemplateRef && !langServerLoadState) {
-            if (linkedRelativePath) {
-                title += `: "${linkedRelativePath}"`;
+            if (friendlyPath) {
+                title += `: "${friendlyPath}"`;
             }
 
             langServerLoadState = LinkedTemplateCodeLens.getLinkedFileLoadStateLabelSuffix(firstLinkedTemplateRef);
