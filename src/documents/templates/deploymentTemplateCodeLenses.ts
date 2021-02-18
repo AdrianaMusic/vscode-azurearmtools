@@ -273,7 +273,7 @@ export class LinkedTemplateCodeLens extends ResolvableCodeLens {
         try {
             const templateUri = scope.document.documentUri;
             linkedUri = firstLinkedTemplateRef?.fullUri ? Uri.parse(firstLinkedTemplateRef.fullUri) : undefined;
-            if (linkedUri && templateUri.fsPath && linkedUri.scheme === documentSchemes.file) {
+            if (isRelativePath && linkedUri && templateUri.fsPath && linkedUri.scheme === documentSchemes.file) {
                 const templateFolder = path.dirname(templateUri.fsPath);
                 friendlyPath = path.relative(templateFolder, linkedUri.fsPath);
                 if (!path.isAbsolute(friendlyPath) && !friendlyPath.startsWith('.')) {

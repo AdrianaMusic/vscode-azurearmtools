@@ -20,7 +20,7 @@ import { considerQueryingForParameterFile, getFriendlyPathToFile, openParameterF
 import { addMissingParameters } from "./documents/parameters/ParameterValues";
 import { IReferenceSite, PositionContext } from "./documents/positionContexts/PositionContext";
 import { TemplatePositionContext } from "./documents/positionContexts/TemplatePositionContext";
-import { DeploymentTemplateDoc, IDocumentLinkInternal } from "./documents/templates/DeploymentTemplateDoc";
+import { DeploymentTemplateDoc } from "./documents/templates/DeploymentTemplateDoc";
 import { ExtractItem } from './documents/templates/ExtractItem';
 import { getNormalizedDocumentKey } from './documents/templates/getNormalizedDocumentKey';
 import { gotoResources } from './documents/templates/gotoResources';
@@ -1001,9 +1001,10 @@ export class AzureRMTools implements IProvideOpenedDocuments {
                 provideDocumentLinks: async (document: vscode.TextDocument, token: vscode.CancellationToken): Promise<vscode.DocumentLink[] | undefined> => {
                     return await this.provideDocumentLinks(document, token);
                 },
-                resolveDocumentLink: async (link: vscode.DocumentLink, token: vscode.CancellationToken): Promise<vscode.DocumentLink | undefined> => {
-                    return await this.resolveDocumentLink(link, token);
-                }
+                //asdf
+                // resolveDocumentLink: async (link: vscode.DocumentLink, token: vscode.CancellationToken): Promise<vscode.DocumentLink | undefined> => {
+                //     return await this.resolveDocumentLink(link, token);
+                // }
             };
             ext.context.subscriptions.push(
                 vscode.languages.registerDocumentLinkProvider(templateDocumentSelector, documentLinkProvider));
@@ -1680,23 +1681,24 @@ export class AzureRMTools implements IProvideOpenedDocuments {
         });
     }
 
-    private async resolveDocumentLink(link: vscode.DocumentLink, token: vscode.CancellationToken): Promise<vscode.DocumentLink | undefined> {
-        return await callWithTelemetryAndErrorHandling('resolveDocumentLink', async (actionContext) => {
-            actionContext.telemetry.suppressIfSuccessful = true;
+    //asdf
+    // private async resolveDocumentLink(link: vscode.DocumentLink, token: vscode.CancellationToken): Promise<vscode.DocumentLink | undefined> {
+    //     return await callWithTelemetryAndErrorHandling('resolveDocumentLink', async (actionContext) => {
+    //         actionContext.telemetry.suppressIfSuccessful = true;
 
-            const internalLink = <IDocumentLinkInternal>link;
-            const scope = internalLink.internal?.scope;
-            if (scope && scope.linkedFileReferences && scope.linkedFileReferences.length > 0) {
+    //         const internalLink = <IDocumentLinkInternal>link;
+    //         const scope = internalLink.internal?.scope;
+    //         if (scope && scope.linkedFileReferences && scope.linkedFileReferences.length > 0) {
 
-                link.target = vscode.Uri.parse(scope.linkedFileReferences[0].fullUri);
-            } else {
-                // If we don't have info directly from the language server right now, use the fallback
-                link.target = internalLink.internal?.fallbackTarget;
-            }
+    //             link.target = vscode.Uri.parse(scope.linkedFileReferences[0].fullUri);
+    //         } else {
+    //             // If we don't have info directly from the language server right now, use the fallback
+    //             link.target = internalLink.internal?.fallbackTarget;
+    //         }
 
-            return link;
-        });
-    }
+    //         return link;
+    //     });
+    // }
 
     private onActiveTextEditorChanged(editor: vscode.TextEditor | undefined): void {
         callWithTelemetryAndErrorHandlingSync('onActiveTextEditorChanged', (actionContext: IActionContext): void => {
