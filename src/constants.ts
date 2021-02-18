@@ -15,6 +15,8 @@ export const basePath = path.join(__dirname, isWebpack ? "" : "..", "..");
 export const assetsPath = path.join(basePath, "assets");
 export const iconsPath = path.join(basePath, "icons");
 
+export const linkedTemplateScheme = 'linked-template';
+
 export const languageServerName = 'ARM Template Language Server';
 export const languageFriendlyName = 'Azure Resource Manager Template';
 export const armTemplateLanguageId = 'arm-template';

@@ -5,7 +5,7 @@
 import * as path from 'path';
 import { commands, DocumentLink, TextDocument, Uri, workspace } from "vscode";
 import { callWithTelemetryAndErrorHandling, IActionContext, parseError, TelemetryProperties } from "vscode-azureextensionui";
-import { armTemplateLanguageId } from '../../../constants';
+import { armTemplateLanguageId, linkedTemplateScheme } from '../../../constants';
 import { Errorish } from '../../../Errorish';
 import { ext } from "../../../extensionVariables";
 import { assert } from '../../../fixed_assert';
@@ -105,12 +105,12 @@ export async function onRequestOpenLinkedFile(
                 const content = await httpGet(requestedLinkUri.toString());
                 const dt = new DeploymentTemplateDoc(content, requestedLinkUri, 0);
                 assert(ext.provideOpenedDocuments, "ext.provideOpenedDocuments");
-                const newUri = Uri.parse(`linked-template:${requestedLinkUri.path}`);
-                ext.provideOpenedDocuments.setOpenedDeploymentDocument(requestedLinkUri/*newUri/*asdf*/, dt); //asdf comment
+                const newUri = Uri.parse(`${linkedTemplateScheme}:${requestedLinkUri.toString()}`);
+                //ext.provideOpenedDocuments.setOpenedDeploymentDocument(requestedLinkUri/*newUri/*asdf*/, dt); //asdf comment
                 //asdf ext.provideOpenedDocuments.setStaticDocument(newUri, content); //asdf
 
-                await workspace.openTextDocument(newUri); //asdf don't wait (actually, don't load)
-                //setLangIdToArm(doc, context);
+                const doc = await workspace.openTextDocument(newUri); //asdf don't wait (actually, don't load)
+                setLangIdToArm(doc, context);
 
                 return { content }; //asdf
             } catch (error) {

@@ -5,7 +5,7 @@
 import * as path from 'path';
 import { languages, Position, Range, TextDocument, workspace } from "vscode";
 import { IActionContext } from "vscode-azureextensionui";
-import { armTemplateLanguageId, configKeys, configPrefix } from "../../constants";
+import { armTemplateLanguageId, configKeys, configPrefix, linkedTemplateScheme } from "../../constants";
 import { containsArmSchema, containsParametersSchema } from "./schemas";
 
 export namespace documentSchemes {
@@ -43,6 +43,10 @@ function isJsonOrJsoncLangId(textDocument: TextDocument): boolean {
 // We keep track of arm-template files, of course,
 // but also JSON/JSONC so we can check them for the ARM deployment and parameters schemas
 function shouldWatchDocument(textDocument: TextDocument): boolean {
+    if (textDocument.uri.scheme === linkedTemplateScheme) {
+        return true;
+    }
+
     if (
         textDocument.uri.scheme !== 'file'
         && textDocument.uri.scheme !== 'untitled' // unsaved files
