@@ -8,7 +8,7 @@ import * as path from 'path';
 import * as vscode from "vscode";
 import { AzureUserInput, callWithTelemetryAndErrorHandling, callWithTelemetryAndErrorHandlingSync, createAzExtOutputChannel, IActionContext, ITelemetryContext, registerCommand, registerUIExtensionVariables, TelemetryProperties } from "vscode-azureextensionui";
 import { delay } from "../test/support/delay";
-import { armTemplateLanguageId, configKeys, configPrefix, expressionsDiagnosticsCompletionMessage, expressionsDiagnosticsSource, globalStateKeys, outputChannelName } from "./constants";
+import { armTemplateLanguageId, configKeys, configPrefix, documentSchemes, expressionsDiagnosticsCompletionMessage, expressionsDiagnosticsSource, globalStateKeys, outputChannelName } from "./constants";
 import { DeploymentDocument, ResolvableCodeLens } from "./documents/DeploymentDocument";
 import { DeploymentFileMapping } from "./documents/parameters/DeploymentFileMapping";
 import { DeploymentParametersDoc } from "./documents/parameters/DeploymentParametersDoc";
@@ -765,7 +765,7 @@ export class AzureRMTools implements IProvideOpenedDocuments {
     private considerQueryingForNewerSchema(editor: vscode.TextEditor, deploymentTemplate: DeploymentTemplateDoc): void {
         // Only deal with saved files, because we don't have an accurate
         //   URI that we can track for unsaved files, and it's a better user experience.
-        if (editor.document.uri.scheme !== 'file') {
+        if (editor.document.uri.scheme !== documentSchemes.file) {
             return;
         }
 
@@ -1010,8 +1010,9 @@ export class AzureRMTools implements IProvideOpenedDocuments {
 
             const linkedTemplateDocumentProvider: vscode.TextDocumentContentProvider = {
                 //asdf changed?
-                provideTextDocumentContent: async (uri: vscode.Uri, _token: vscode.CancellationToken): Promise<string> => {
-                    return "hello";
+                provideTextDocumentContent: async (uri: vscode.Uri, _token: vscode.CancellationToken): Promise<string | undefined/*asdf?*/> => {
+                    const dt = this.getOpenedDeploymentDocument(uri);
+                    return dt?.documentText;
                 }
             };
             ext.context.subscriptions.push(

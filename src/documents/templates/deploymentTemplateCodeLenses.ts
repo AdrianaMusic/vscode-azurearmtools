@@ -7,6 +7,7 @@
 import * as path from "path";
 import { Range, Uri } from 'vscode';
 import { parseError } from 'vscode-azureextensionui';
+import { documentSchemes } from "../../constants";
 import { ext } from '../../extensionVariables';
 import { Span } from '../../language/Span';
 import { LanguageServerState } from '../../languageclient/startArmLanguageServer';
@@ -272,7 +273,7 @@ export class LinkedTemplateCodeLens extends ResolvableCodeLens {
         try {
             const templateUri = scope.document.documentUri;
             linkedUri = firstLinkedTemplateRef?.fullUri ? Uri.parse(firstLinkedTemplateRef.fullUri) : undefined;
-            if (linkedUri && templateUri.fsPath && linkedUri.scheme === 'file'/*asdf constant*/) {
+            if (linkedUri && templateUri.fsPath && linkedUri.scheme === documentSchemes.file) {
                 const templateFolder = path.dirname(templateUri.fsPath);
                 friendlyPath = path.relative(templateFolder, linkedUri.fsPath);
                 if (!path.isAbsolute(friendlyPath) && !friendlyPath.startsWith('.')) {

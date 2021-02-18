@@ -5,7 +5,7 @@
 import * as path from 'path';
 import { commands, DocumentLink, TextDocument, Uri, workspace } from "vscode";
 import { callWithTelemetryAndErrorHandling, IActionContext, parseError, TelemetryProperties } from "vscode-azureextensionui";
-import { armTemplateLanguageId, linkedTemplateScheme } from '../../../constants';
+import { armTemplateLanguageId, documentSchemes } from '../../../constants';
 import { Errorish } from '../../../Errorish';
 import { ext } from "../../../extensionVariables";
 import { assert } from '../../../fixed_assert';
@@ -86,7 +86,8 @@ export async function onRequestOpenLinkedFile(
 
         assert(path.isAbsolute(requestedLinkUri.fsPath), "Internal error: requestedLinkUri should be an absolute path");
 
-        if (requestedLinkUri.scheme === 'file') {
+        if (requestedLinkUri.scheme === documentSchemes.file) {
+            // It's a local file.
             // Strip the path of any query string, and use only the local file path
             const localPath = requestedLinkUri.fsPath;
 
@@ -101,12 +102,18 @@ export async function onRequestOpenLinkedFile(
             const loadErrorMessage = result.loadError ? parseError(result.loadError).message : undefined;
             return { loadErrorMessage };
         } else {
+            // Something else (http etc).  Try to retrieve the content
             try {
                 const content = await httpGet(requestedLinkUri.toString());
-                const dt = new DeploymentTemplateDoc(content, requestedLinkUri, 0);
                 assert(ext.provideOpenedDocuments, "ext.provideOpenedDocuments");
-                const newUri = Uri.parse(`${linkedTemplateScheme}:${requestedLinkUri.toString()}`);
-                //ext.provideOpenedDocuments.setOpenedDeploymentDocument(requestedLinkUri/*newUri/*asdf*/, dt); //asdf comment
+                const newUriString = `${documentSchemes.linkedTemplate}:${requestedLinkUri.toString()}`;
+                const newUri = Uri.parse(newUriString); //asdf encode?
+
+                // We need to place it into our docs immediately because our text document content provider will be queried
+                // for content before we get the document open event
+                const dt = new DeploymentTemplateDoc(content, newUri/*asdf?*/, 0);
+                ext.provideOpenedDocuments.setOpenedDeploymentDocument(newUri/*newUri/*asdf*/, dt); //asdf comment
+
                 //asdf ext.provideOpenedDocuments.setStaticDocument(newUri, content); //asdf
 
                 const doc = await workspace.openTextDocument(newUri); //asdf don't wait (actually, don't load)
