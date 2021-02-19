@@ -15,6 +15,7 @@ import { httpGet } from '../../../util/httpGet';
 import { normalizePath } from '../../../util/normalizePath';
 import { ofType } from '../../../util/ofType';
 import { pathExists } from '../../../util/pathExists';
+import { prependLinkedTemplateScheme } from '../../../util/prependLinkedTemplateScheme';
 import { DeploymentTemplateDoc } from '../../templates/DeploymentTemplateDoc';
 import { LinkedTemplateScope } from '../../templates/scopes/templateScopes';
 import { setLangIdToArm } from '../../templates/supported';
@@ -106,8 +107,7 @@ export async function onRequestOpenLinkedFile(
             try {
                 const content = await httpGet(requestedLinkUri.toString());
                 assert(ext.provideOpenedDocuments, "ext.provideOpenedDocuments");
-                const newUriString = `${documentSchemes.linkedTemplate}:${requestedLinkUri.toString()}`;
-                const newUri = Uri.parse(newUriString); //asdf encode?
+                const newUri = prependLinkedTemplateScheme(requestedLinkUri);
 
                 // We need to place it into our docs immediately because our text document content provider will be queried
                 // for content before we get the document open event
@@ -202,7 +202,7 @@ export function assignTemplateGraphToDeploymentTemplate(
 
 export async function openLinkedTemplateFile(linkedTemplateUri: Uri): Promise<void> {
     const args = <DocumentLink>{
-        target: linkedTemplateUri
+        target: prependLinkedTemplateScheme(linkedTemplateUri)
     };
     await commands.executeCommand("editor.action.openLink", args);
 }

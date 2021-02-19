@@ -1,0 +1,23 @@
+// ---------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.md in the project root for license information.
+// ---------------------------------------------------------------------------------------------
+
+import { Uri } from "vscode";
+import { documentSchemes } from "../constants";
+
+/**
+ * Prepends the linked template scheme to the given URI if it's not a local file
+ */
+export function prependLinkedTemplateScheme(uri: Uri): Uri {
+    switch (uri.scheme) {
+        case documentSchemes.file:
+        case documentSchemes.git:
+        case documentSchemes.untitled:
+            return uri;
+
+        default:
+            const newUri = `${documentSchemes.linkedTemplate}:${uri.toString()}`;
+            return Uri.parse(newUri);
+    }
+}

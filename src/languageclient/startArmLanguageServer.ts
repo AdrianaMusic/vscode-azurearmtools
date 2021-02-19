@@ -17,6 +17,7 @@ import { ext } from '../extensionVariables';
 import { assert } from '../fixed_assert';
 import { assertNever } from '../util/assertNever';
 import { delayWhileSync } from '../util/delayWhileSync';
+import { prependLinkedTemplateScheme } from '../util/prependLinkedTemplateScheme';
 import { WrappedErrorHandler } from './WrappedErrorHandler';
 
 const languageServerDllName = 'Microsoft.ArmLanguageServer.dll';
@@ -178,7 +179,7 @@ export async function startLanguageClient(serverDllPath: string, dotnetExePath: 
                             if (d.relatedInformation) {
                                 for (const ri of d.relatedInformation) {
                                     if (ri.location.uri.scheme !== documentSchemes.file) { //asdf?
-                                        ri.location.uri = Uri.parse(`${documentSchemes.linkedTemplate}:${ri.location.uri.toString()}`); //asdf extract
+                                        ri.location.uri = prependLinkedTemplateScheme(ri.location.uri);
                                     }
                                 }
                             }
