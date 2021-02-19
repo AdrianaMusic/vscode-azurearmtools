@@ -215,8 +215,8 @@ export class AzureRMTools implements IProvideOpenedDocuments {
                 await openTemplateFile(this._mapping, sourceParamUri, undefined);
             });
         registerCommand(
-            "azurerm-vscode-tools.codeLens.openLinkedTemplateFile", async (_actionContext: IActionContext, linkedTemplateUri: vscode.Uri) => {
-                await openLinkedTemplateFile(linkedTemplateUri);
+            "azurerm-vscode-tools.codeLens.openLinkedTemplateFile", async (actionContext: IActionContext, linkedTemplateUri: vscode.Uri) => {
+                await openLinkedTemplateFile(linkedTemplateUri, actionContext);
             });
         registerCommand("azurerm-vscode-tools.insertItem", async (actionContext: IActionContext, uri?: vscode.Uri, editor?: vscode.TextEditor) => {
             editor = editor || vscode.window.activeTextEditor;

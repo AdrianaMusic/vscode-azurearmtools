@@ -3,7 +3,7 @@
 // ----------------------------------------------------------------------------
 
 import * as path from 'path';
-import { commands, DocumentLink, TextDocument, Uri, workspace } from "vscode";
+import { TextDocument, Uri, window, workspace } from "vscode";
 import { callWithTelemetryAndErrorHandling, IActionContext, parseError, TelemetryProperties } from "vscode-azureextensionui";
 import { armTemplateLanguageId, documentSchemes } from '../../../constants';
 import { Errorish } from '../../../Errorish';
@@ -200,9 +200,10 @@ export function assignTemplateGraphToDeploymentTemplate(
     }
 }
 
-export async function openLinkedTemplateFile(linkedTemplateUri: Uri): Promise<void> {
-    const args = <DocumentLink>{
-        target: prependLinkedTemplateScheme(linkedTemplateUri)
-    };
-    await commands.executeCommand("editor.action.openLink", args);
+export async function openLinkedTemplateFile(linkedTemplateUri: Uri, actionContext: IActionContext): Promise<void> {
+    //asdf handle create new
+    const targetUri = prependLinkedTemplateScheme(linkedTemplateUri);
+    const doc = await workspace.openTextDocument(targetUri);
+    setLangIdToArm(doc, actionContext);
+    await window.showTextDocument(doc);
 }

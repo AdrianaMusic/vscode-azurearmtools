@@ -800,8 +800,9 @@ export class DeploymentTemplateDoc extends DeploymentDocument {
             const templateLinkObject = scope.templateLinkObject;
             // Use the "uri" or "relativePath" property, whichever is there
             const linkedPropertyStringValue: Json.StringValue | undefined =
-                templateLinkObject?.getPropertyValue(templateKeys.linkedDeploymentTemplateLinkRelativePath)
-                    ?.asStringValue ??
+                //asdf
+                // templateLinkObject?.getPropertyValue(templateKeys.linkedDeploymentTemplateLinkRelativePath)
+                //     ?.asStringValue ??
                 templateLinkObject?.getPropertyValue(templateKeys.linkedDeploymentTemplateLinkUri)
                     ?.asStringValue;
             const linkedPropertyString: string | undefined = linkedPropertyStringValue?.unquotedValue;
